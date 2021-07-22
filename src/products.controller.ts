@@ -9,41 +9,38 @@ import {
 } from '@nestjs/common';
 
 import { ProductModel } from './product.model';
+import { ProductsService } from './products.service';
 
 @Controller('products') // This Will be the URL for the req
 export class ProductsController {
-  products: ProductModel[] = [
-    new ProductModel('LIV01', 'Livro Zero Um', 29.9),
-    new ProductModel('LIV02', 'Livro Zero Dois', 19.9),
-    new ProductModel('LIV03', 'Livro Zero Três', 49.9),
-  ];
+  constructor(private productsService: ProductsService) {}
 
   @Get()
   getAll(): ProductModel[] {
-    return this.products;
+    return this.productsService.getAll();
   }
 
   @Get(':id')
-  getOne(@Param() Param): ProductModel {
-    return this.products[0];
+  getOne(@Param() params): ProductModel {
+    return this.productsService.getOne(params.id);
   }
 
   @Post()
   create(@Body() product: ProductModel): string {
-    product.id = 100;
-    this.products.push(product);
+    this.productsService.create(product);
+
     return `Product created`;
   }
 
   @Put()
   edit(@Body() product: ProductModel): ProductModel {
-    console.log(product);
-    return product;
+    return this.productsService.edit(product);
   }
 
   @Delete(':id')
   delete(@Param() params): string {
-    this.products.pop();
-    return `Product ${params.id} deleted`;
+    this.productsService.delete(params.id);
+
+    return `Product 1000 deleted`;
   }
 }
