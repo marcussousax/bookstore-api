@@ -1,5 +1,6 @@
 import { BookModel } from './book.model';
 import { Injectable } from '@nestjs/common';
+import { InjectModel } from '@nestjs/sequelize';
 
 /**
  * Documentation about Dependency injection
@@ -20,29 +21,33 @@ import { Injectable } from '@nestjs/common';
 
 @Injectable()
 export class BooksService {
-  books: BookModel[] = [
-    new BookModel('LIV01', 'Livro Zero Um', 29.9),
-    new BookModel('LIV02', 'Livro Zero Dois', 19.9),
-    new BookModel('LIV03', 'Livro Zero Três', 49.9),
-  ];
+  constructor(
+    @InjectModel(BookModel)
+    private bookModel: typeof BookModel,
+  ) {}
 
-  getAll(): BookModel[] {
-    return this.books;
+  async getAll(): Promise<BookModel[]> {
+    return this.bookModel.findAll();
   }
 
-  getOne(id: number): BookModel {
-    return this.books[0];
+  async getOne(id: number): Promise<BookModel> {
+    return this.bookModel.findByPk(id);
   }
 
-  create(book: BookModel): void {
-    this.books.push(book);
+  async create(book: BookModel): Promise<void> {
+    this.bookModel.create(book);
   }
 
-  edit(book: BookModel): BookModel {
-    return book;
+  async edit(book: BookModel): Promise<[number, BookModel[]]> {
+    return this.bookModel.update(book, {
+      where: {
+        id: book.id,
+      },
+    });
   }
 
-  delete(id: number): void {
-    this.books.pop();
+  async delete(id: number): Promise<void> {
+    const book: BookModel = await this.getOne(id);
+    book.destroy();
   }
 }
