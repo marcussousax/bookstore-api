@@ -1,5 +1,5 @@
 ####TODO:
-- To use TypeORM instead Sequeliza
+- To use TypeORM instead Sequelize
 
 ----
 
